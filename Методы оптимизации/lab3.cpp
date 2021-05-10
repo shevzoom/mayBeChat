@@ -4,15 +4,15 @@
 using namespace std;
 
 double fun(double x1, double x2) {
-    return pow(x1,2)+4*pow(x2,2)+sin(x1-x2);
+    return pow(x1,2) + 4*pow(x2,2) + sin(x1-x2);
 }
 
 double dif1(double x1,double x2) {
-    return 2*x1+cos(x1-x2);
+    return 2*x1 + cos(x1-x2);
 }
 
 double dif2(double x1,double x2) {
-    return 8*x2-cos(x1-x2);
+    return 8*x2 - cos(x1-x2);
 }
 
 double 𝛆 = 1e-5;
