@@ -50,7 +50,6 @@ solve = function(h) {
       K[i,i] = (2*p[2]) / h
       M[i,i] = (2*q[2]*h) / 3
       
-      # Возможно здесь разрыв
       F[i] = (1/h) * (integrate(f21, x[i-1], x[i])[[1]] - x[i-1] * integrate(f22, x[i-1], x[i])[[1]] -
                         integrate(f21, x[i], x[i+1])[[1]] + x[i+1] * integrate(f22, x[i], x[i+1])[[1]])
     }
@@ -95,10 +94,9 @@ solve = function(h) {
   K[1,2] = -p[1] / h
   M[1,1] = q[1]*h / 3
   M[1,2] = q[1]*h / 6
-  F[1] = (1/h) * (x[2] * integrate(f12, x[1], x[2])[[1]] - integrate(f11, x[1], x[2])[[1]]) + Ja
-
+  F[1] = (1/h) * (x[2] * integrate(f12, x[1], x[2])[[1]] - integrate(f11, x[1], x[2])[[1]]) - Ja
   Q = K + M
-  Q[1,1] = Q[1,1] + Ja
+  Q[1,1] = Q[1,1] 
   
   u = c()
   u[n+1] = 10.5
@@ -117,15 +115,14 @@ solve = function(h) {
     alpha[i] = -Q[i,i-1] / (Q[i,i+1] * alpha[i+1] + Q[i,i])
     beta[i] = (F[i] - Q[i,i+1] * beta[i+1]) / (Q[i, i+1] * alpha[i+1] + Q[i,i])
   }
-
-  u[1] = (F[1] - Q[1, 2] * beta[2]) / (Q[1,2] * alpha[2] + Q[1,1])
   
+  u[1] = (F[1] - Q[1, 2] * beta[2]) / (Q[1,2] * alpha[2] + Q[1,1])
   for (i in 2:n) {
     u[i] = alpha[i] * u[i-1] + beta[i]
   }
   
-  plot(0, 0, col="white", xlim=c(0.1, 1.2), ylim = c(-10,11.5))
-  grid(col=1)
+  plot(0, 0, col="white", xlim=c(0, 1.2), ylim = c(10,11.5), title(h))
+  grid(10, col=1)
   
   points(x, u, col=2,lwd=3)
   
@@ -136,28 +133,36 @@ solve = function(h) {
     xh[n] = x[n] + (h/2) 
     U[n] = (u[n+1] - u[n]) / h
   }
+  print(U)
 
   pu1= -p[1] * U[which(xh > a[1] & xh < a[2])]
   pu2= -p[2] * U[which(xh > a[2] & xh < a[3])]
   pu3= -p[3] * U[which(xh > a[3] & xh < a[4])]
   pu = c(pu1,pu2,pu3)
   
+  plot(0, 0, col="white", xlim=c(0, 1.2), ylim = c(-5,9))
+  grid(10, col=1)
   for (i in 1:(length(x)-1)) {
     points(c(x[i], x[i+1]), c(pu[i], pu[i]), type="l", col=4, lwd=2, title(h))
   }
   
 #### невязка 
-  U1 =  Ja - p[1]*U[1]
-  print("u'(a)")
-  print(U1)
+  U1 = p[1]*U[1]
+  
+  print(paste0("Ja: ", Ja))
+  print(paste0("u'(a)*p(a): ", U1))
+  cat("\nНевязка: ", Ja - U1)
+  # print("u'(a)*p(a):")
+  # print(U1)
+  # print("Ja:")
+  
 #### невязка 
   
   # df  = data.frame(x = x,
   #                  y = u
   # )
-  # 
-  # ggplot(NULL) + 
-  #   geom_line(data = df, aes(x, y))+ xlim(0.1, 1.2) + ylim(-5,11.5)
+  # ggplot(NULL) +
+  #   geom_line(data = df, aes(x, y))+ xlim(0.1, 1.2) + ylim(9, 11.5)
 
 }
 solve(0.01)
